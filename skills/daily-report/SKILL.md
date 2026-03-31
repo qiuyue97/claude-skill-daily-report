@@ -6,10 +6,13 @@ description: Use when the user wants to write, update, or finalize their daily w
 # 日报 Skill
 
 ## 固定信息
+
+> **安装后请修改以下字段为你自己的信息。**
+
 - **部门**：【你的部门】
 - **姓名**：【你的姓名】
-- **日报根目录**：`~/daily-report\`
-- **今日目录**：`~/daily-report\{今天日期YYYY-MM-DD}\`
+- **日报根目录**：由环境变量 `DAILY_REPORT_DIR` 决定，默认为 `~/daily-report/`
+- **今日目录**：`{DAILY_REPORT_DIR}/{今天日期YYYY-MM-DD}/`
 - **工作日志**：今日目录下的 `worklog.md`（对话中自动维护）
 - **最终日报**：今日目录下的 `daily-report.md`（调用 skill 时生成）
 
@@ -65,7 +68,7 @@ description: Use when the user wants to write, update, or finalize their daily w
 ### 日报格式（严格照此输出，不得更改结构）
 
 ```
-📅 日报 - 【【你的部门】】-[【你的姓名】] - YYYY年MM月DD日
+📅 日报 - 【你的部门】-[你的姓名] - YYYY年MM月DD日
 
 ✅ 今日完成 (Done)
 【项目名称】[任务] 完成度X%：具体描述...
