@@ -9,7 +9,7 @@
 - 遇到问题、尝试了方案、需要求助
 - 有技术心得、业务洞察或反思
 
-**Worklog 路径**：`~/daily-report\{今天日期 YYYY-MM-DD}\worklog.md`
+**Worklog 路径**：环境变量 `DAILY_REPORT_DIR` 所指目录下的 `{今天日期 YYYY-MM-DD}\worklog.md`，默认为 `~/daily-report/{今天日期 YYYY-MM-DD}/worklog.md`。安装后请将此行替换为你的实际路径。
 **日期**：以系统当前日期为准，每次写入前用 `datetime.date.today()` 获取，不要猜测或硬编码。
 
 **追加格式**：
