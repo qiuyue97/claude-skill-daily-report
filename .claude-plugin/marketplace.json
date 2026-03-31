@@ -1,0 +1,15 @@
+{
+  "name": "qiuyue97-skills",
+  "owner": {
+    "name": "qiuyue97",
+    "url": "https://github.com/qiuyue97"
+  },
+  "plugins": [
+    {
+      "name": "daily-report",
+      "source": "./",
+      "description": "Auto-log daily work to a worklog during conversations, and compose a formatted daily report (日报) at end of day via /daily-report",
+      "version": "1.0.0"
+    }
+  ]
+}

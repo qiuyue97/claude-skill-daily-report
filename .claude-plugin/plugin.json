@@ -1,0 +1,17 @@
+{
+  "name": "daily-report",
+  "description": "Auto-log daily work to a worklog during conversations, and compose a formatted daily report (日报) at end of day via /daily-report",
+  "version": "1.0.0",
+  "author": {
+    "name": "qiuyue97",
+    "url": "https://github.com/qiuyue97"
+  },
+  "repository": "https://github.com/qiuyue97/claude-skill-daily-report",
+  "license": "MIT",
+  "keywords": [
+    "daily-report",
+    "worklog",
+    "productivity",
+    "日报"
+  ]
+}

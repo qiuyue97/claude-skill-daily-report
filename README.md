@@ -1,52 +1,78 @@
 # claude-skill-daily-report
 
-A Claude Code skill for automating daily work report (日报) writing. During conversations, Claude silently logs your work progress. At the end of the day, invoke the skill to compose the final report through a guided conversation.
+A Claude Code plugin for daily work report (日报) automation.
+
+- During conversations, Claude silently logs your work progress to a daily worklog
+- A date folder is created automatically every time you open Claude (via SessionStart hook)
+- At end of day, invoke `/daily-report` to fill in tomorrow's plan and compose the final formatted report
 
 ---
 
-## Features
+## Installation (via plugin — recommended)
 
-- **Auto worklog**: Claude detects work-related content in any conversation and silently appends it to today's worklog
-- **Date folder auto-creation**: A folder for today's date is created automatically every time you open Claude
-- **End-of-day report**: Invoke `/daily-report` to fill in tomorrow's plan and any missing sections through conversation, then get the final formatted report ready to paste
+### Step 1: Register the marketplace
+
+Add the following to `~/.claude/settings.json` (merge into existing JSON, don't replace):
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "qiuyue97-skills": {
+      "source": {
+        "source": "github",
+        "repo": "qiuyue97/claude-skill-daily-report"
+      }
+    }
+  }
+}
+```
+
+### Step 2: Enable the plugin
+
+Add to `enabledPlugins` in the same file:
+
+```json
+{
+  "enabledPlugins": {
+    "daily-report@qiuyue97-skills": true
+  }
+}
+```
+
+The plugin system will automatically:
+- Download the skill to `~/.claude/plugins/cache/`
+- Register the `SessionStart` hook that creates today's date folder and initializes `worklog.md`
+- Make `/daily-report` available as a skill
+
+### Step 3: Set your report directory (optional)
+
+By default, daily reports are saved to `~/daily-report/<YYYY-MM-DD>/`. To use a custom path, set the environment variable:
+
+```bash
+# macOS/Linux — add to ~/.zshrc or ~/.bashrc
+export DAILY_REPORT_DIR="/your/custom/path"
+
+# Windows — set in System Environment Variables
+DAILY_REPORT_DIR=C:\your\custom\path
+```
+
+### Step 4: Add the global worklog rule (required for auto-logging)
+
+The plugin provides the skill and hook, but the **auto-logging behavior** (Claude silently writing to worklog during conversations) requires a rule in your global `~/.claude/CLAUDE.md`.
+
+Append the contents of [`CLAUDE.md`](./CLAUDE.md) from this repo to your `~/.claude/CLAUDE.md`.
+
+> Update the `Worklog 路径` line to match your `DAILY_REPORT_DIR`.
 
 ---
 
-## Installation
+## Manual installation (alternative)
 
-### 1. Copy the skill file
+If you prefer not to use the plugin system:
 
-Copy `SKILL.md` to your personal Claude Code skills directory:
-
-```
-~/.claude/skills/daily-report/SKILL.md
-```
-
-On Windows:
-```
-C:\Users\<your-username>\.claude\skills\daily-report\SKILL.md
-```
-
-### 2. Add the global worklog rule to CLAUDE.md
-
-Append the contents of `CLAUDE.md` in this repo to your global Claude config file:
-
-```
-~/.claude/CLAUDE.md
-```
-
-On Windows:
-```
-C:\Users\<your-username>\.claude\CLAUDE.md
-```
-
-This tells every Claude session (regardless of working directory) to silently record work-related content into today's worklog.
-
-> Adjust the `Worklog 路径` in `CLAUDE.md` to match where you want daily reports stored on your machine.
-
-### 3. Set up the SessionStart hook
-
-Add the following to your `~/.claude/settings.json` (on Windows: `C:\Users\<your-username>\.claude\settings.json`):
+1. Copy `skills/daily-report/SKILL.md` → `~/.claude/skills/daily-report/SKILL.md`
+2. Append `CLAUDE.md` contents → `~/.claude/CLAUDE.md`
+3. Add to `~/.claude/settings.json`:
 
 ```json
 {
@@ -56,7 +82,7 @@ Add the following to your `~/.claude/settings.json` (on Windows: `C:\Users\<your
         "hooks": [
           {
             "type": "command",
-            "command": "python -c \"import os,datetime; today=datetime.date.today().strftime('%Y-%m-%d'); folder='<YOUR_DAILY_REPORT_PATH>/'+today; os.makedirs(folder,exist_ok=True); wl=folder+'/worklog.md'; open(wl,'a',encoding='utf-8').write('' if os.path.exists(wl) and os.path.getsize(wl)>0 else '# 工作日志 - '+today+'\\n\\n## 完成的工作\\n\\n## 问题与求助\\n\\n## 学习与思考\\n')\""
+            "command": "python -c \"import os,datetime; today=datetime.date.today().strftime('%Y-%m-%d'); base=os.environ.get('DAILY_REPORT_DIR',os.path.expanduser('~/daily-report')); folder=os.path.join(base,today); os.makedirs(folder,exist_ok=True); wl=os.path.join(folder,'worklog.md'); open(wl,'a',encoding='utf-8').write('' if os.path.exists(wl) and os.path.getsize(wl)>0 else '# 工作日志 - '+today+'\\n\\n## 完成的工作\\n\\n## 问题与求助\\n\\n## 学习与思考\\n')\""
           }
         ]
       }
@@ -65,40 +91,21 @@ Add the following to your `~/.claude/settings.json` (on Windows: `C:\Users\<your
 }
 ```
 
-Replace `<YOUR_DAILY_REPORT_PATH>` with the actual path where you want daily report folders created (use forward slashes even on Windows), for example:
-
-```
-C:/Users/yourname/daily-report
-```
-
-If `settings.json` already has other content, merge the `hooks` block into the existing JSON rather than replacing the file.
-
-This hook runs every time a Claude session starts and:
-- Creates a folder named with today's date (e.g. `2026-03-31/`)
-- Initializes an empty `worklog.md` inside it if one doesn't exist yet
-
 ---
 
 ## Usage
 
 ### During the day
 
-Just work normally. Whenever you mention completing a task, hitting a blocker, or having a technical insight, Claude will silently append it to `<daily-report-path>/<today>/worklog.md`.
+Work normally. When you mention completing a task, hitting a blocker, or a technical insight, Claude silently appends it to `<DAILY_REPORT_DIR>/<today>/worklog.md`.
 
 ### End of day
-
-Invoke the skill:
 
 ```
 /daily-report
 ```
 
-Claude will:
-1. Read today's worklog
-2. Confirm completed items with you
-3. Ask for tomorrow's plan and priorities
-4. Ask about any learnings or reflections (if not already logged)
-5. Generate the final report and write it to `daily-report.md`
+Claude will read today's worklog, confirm completed items, ask for tomorrow's plan and priorities, then generate the final report and write it to `daily-report.md`.
 
 ---
 
@@ -124,4 +131,24 @@ Claude will:
 反思：...
 ```
 
-Update the department and name fields in `SKILL.md` to match your own.
+Update the department and name in `skills/daily-report/SKILL.md` to match your own.
+
+---
+
+## Repository structure
+
+```
+.
+├── .claude-plugin/
+│   ├── plugin.json          # Plugin metadata
+│   └── marketplace.json     # Marketplace registry
+├── hooks/
+│   ├── hooks.json           # Hook definitions (SessionStart)
+│   ├── session-start.cmd    # Windows hook script
+│   └── session-start.sh     # macOS/Linux hook script
+├── skills/
+│   └── daily-report/
+│       └── SKILL.md         # Claude Code skill definition
+├── CLAUDE.md                # Global worklog rule (append to ~/.claude/CLAUDE.md)
+└── README.md
+```
