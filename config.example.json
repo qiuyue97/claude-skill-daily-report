@@ -1,0 +1,9 @@
+{
+  "app_id": "cli_xxxxxxxxxxxxxxxx",
+  "app_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "bitable_app_token": "xxxxxxxxxxxxxxxxxxxxxx",
+  "table_id": "tblxxxxxxxxxxxxxxxx",
+  "daily_report_dir": "/path/to/your/daily-report",
+  "name": "Your Name",
+  "department": "Your Department"
+}

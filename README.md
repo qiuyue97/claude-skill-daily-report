@@ -87,7 +87,35 @@ Claude will read today's worklog, confirm completed items, ask for tomorrow's pl
 反思：...
 ```
 
-Update the department and name fields in `skills/daily-report/SKILL.md` to match your own.
+Update the department and name fields in `config.json` to match your own.
+
+---
+
+## Feishu Bitable push (optional)
+
+You can push the final report to a Feishu Bitable automatically. This feature is entirely optional — the skill works without it.
+
+### Setup
+
+1. Copy `config.example.json` to `~/.claude/skills/daily-report/config.json`
+2. Fill in all fields:
+   ```json
+   {
+     "app_id": "cli_xxxxxxxxxxxxxxxx",
+     "app_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+     "bitable_app_token": "xxxxxxxxxxxxxxxxxxxxxx",
+     "table_id": "tblxxxxxxxxxxxxxxxx",
+     "daily_report_dir": "/path/to/your/daily-report",
+     "name": "Your Name",
+     "department": "Your Department"
+   }
+   ```
+3. In the Feishu developer console, enable the `bitable:app` permission and republish the app
+4. Open the target Bitable → `...` → Add document app → select your app
+
+The Bitable table must have two fields: `日报内容` (text) and `发送时间` (date/time).
+
+When `config.json` contains `app_id`, `app_secret`, and `bitable_app_token`, the skill will offer to push after generating the report. Otherwise it skips the push step silently.
 
 ---
 
@@ -129,9 +157,12 @@ If you prefer not to use the plugin system:
 │   ├── hooks.json           # Hook definitions (SessionStart)
 │   ├── session-start.cmd    # Windows hook script
 │   └── session-start.sh     # macOS/Linux hook script
+├── scripts/
+│   └── push_to_feishu.py    # Optional: push report to Feishu Bitable
 ├── skills/
 │   └── daily-report/
 │       └── SKILL.md         # Claude Code skill definition
+├── config.example.json      # Config template (copy to config.json and fill in)
 ├── CLAUDE.md                # Global worklog rule — append to ~/.claude/CLAUDE.md
 └── README.md
 ```

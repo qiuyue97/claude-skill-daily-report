@@ -5,16 +5,23 @@ description: Use when the user wants to write, update, or finalize their daily w
 
 # 日报 Skill
 
-## 固定信息
+## 配置文件
 
-> **安装后请修改以下字段为你自己的信息。**
+所有个人信息从 `config.json` 读取（与本文件同目录）。参考 `config.example.json` 创建。
 
-- **部门**：【你的部门】
-- **姓名**：【你的姓名】
-- **日报根目录**：由环境变量 `DAILY_REPORT_DIR` 决定，默认为 `~/daily-report/`
-- **今日目录**：`{DAILY_REPORT_DIR}/{今天日期YYYY-MM-DD}/`
+**必填字段：**
+- **部门**：`department`
+- **姓名**：`name`
+- **日报根目录**：`daily_report_dir`，默认 `~/daily-report/`
+- **今日目录**：`{daily_report_dir}/{今天日期YYYY-MM-DD}/`
 - **工作日志**：今日目录下的 `worklog.md`（对话中自动维护）
 - **最终日报**：今日目录下的 `daily-report.md`（调用 skill 时生成）
+
+**可选字段（飞书推送）：**
+- `app_id`、`app_secret`：飞书自建应用凭证
+- `bitable_app_token`、`table_id`：目标多维表格
+- 推送脚本：`scripts/push_to_feishu.py`（与本文件同目录）
+- 若未配置飞书字段，跳过推送步骤即可，不影响日报生成
 
 ---
 
@@ -54,21 +61,32 @@ description: Use when the user wants to write, update, or finalize their daily w
 
 ---
 
-## 行为二：生成最终日报（主动，用户调用时）
+## 行为二：生成最终日报并推送（主动，用户调用时）
 
 ### 步骤
 
-1. **读取** 今日目录下的 `worklog.md`，掌握已记录内容
-2. **逐项确认已完成内容**（如有缺失或描述不清，向用户询问补充）
-3. **询问明日计划**：请用户说明明天各项任务及优先级（高/中/低）
-4. **补充学习与思考**（如 worklog 中无记录，询问用户）
-5. **确认是否有 Blockers**（如无，填"无"）
-6. **生成日报**，写入 `daily-report.md`，并在对话中完整输出供用户复制
+1. **读取** `config.json`，获取 `name`、`department`
+2. **读取** 今日目录下的 `worklog.md`，掌握已记录内容
+3. **逐项确认已完成内容**（如有缺失或描述不清，向用户询问补充）
+4. **询问明日计划**：请用户说明明天各项任务及优先级（高/中/低）
+5. **补充学习与思考**（如 worklog 中无记录，询问用户）
+6. **确认是否有 Blockers**（如无，填"无"）
+7. **生成日报**，写入 `daily-report.md`，并在对话中完整输出供用户复制
+8. **[可选] 推送到飞书**：仅当 `config.json` 中包含 `app_id`、`app_secret`、`bitable_app_token` 时执行：
+   - 询问用户发送时间（格式：YYYY-MM-DD HH:MM）
+   - 调用推送脚本：
+     ```
+     python <skill_dir>/scripts/push_to_feishu.py --send-time "YYYY-MM-DD HH:MM"
+     ```
+   - 输出 `[OK] Daily report pushed to Feishu Bitable` 即成功
+   - 若 `config.json` 中无飞书相关字段，跳过此步骤
 
 ### 日报格式（严格照此输出，不得更改结构）
 
+从 `config.json` 读取 `department` 和 `name` 填入对应位置：
+
 ```
-📅 日报 - 【你的部门】-[你的姓名] - YYYY年MM月DD日
+📅 日报 - 【{department}】-[{name}] - YYYY年MM月DD日
 
 ✅ 今日完成 (Done)
 【项目名称】[任务] 完成度X%：具体描述...
@@ -98,3 +116,4 @@ description: Use when the user wants to write, update, or finalize their daily w
 - 日期以系统当前日期为准（`datetime.date.today()`），不要猜测或硬编码
 - 生成日报前必须通过对话确认明日计划，不可自行编造
 - worklog 中没有记录的内容，询问用户后再填写，不可虚构
+- 推送前必须与用户确认发送时间，不可自行填写
