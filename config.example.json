@@ -5,6 +5,9 @@
   "table_id": "tblxxxxxxxxxxxxxxxx",
   "daily_report_dir": "/path/to/your/daily-report",
   "weekly_report_dir": "/path/to/your/weekly-report",
+  "weekly_app_id": "cli_xxxxxxxxxxxxxxxx",
+  "weekly_app_secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "weekly_folder_token": "",
   "name": "Your Name",
   "department": "Your Department"
 }
