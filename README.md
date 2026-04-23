@@ -1,10 +1,11 @@
 # claude-skill-daily-report
 
-A Claude Code plugin that automates daily work logging and report composition.
+A Claude Code plugin with two skills for daily and weekly work reporting.
 
 - Claude silently logs your work progress to a daily worklog during conversations
 - A date folder is created automatically every time you open Claude (via SessionStart hook)
 - At end of day, invoke `/daily-report` to fill in tomorrow's plan and compose the final formatted report
+- At end of week, invoke `/weekly-report` to auto-read all daily reports and compose the weekly summary
 
 ---
 
@@ -63,6 +64,14 @@ Work normally. Whenever you mention completing a task, hitting a blocker, or a t
 
 Claude will read today's worklog, confirm completed items, ask for tomorrow's plan and priorities, then write the final report to `daily-report.md`.
 
+### End of week
+
+```
+/weekly-report
+```
+
+Claude will automatically read all daily reports from the current week (Monday–Sunday), summarize them into a weekly report, ask for next week's plan, then write the report to `weekly-report.md`.
+
 ---
 
 ## Report format
@@ -106,6 +115,7 @@ You can push the final report to a Feishu Bitable automatically. This feature is
      "bitable_app_token": "xxxxxxxxxxxxxxxxxxxxxx",
      "table_id": "tblxxxxxxxxxxxxxxxx",
      "daily_report_dir": "/path/to/your/daily-report",
+     "weekly_report_dir": "/path/to/your/weekly-report",
      "name": "Your Name",
      "department": "Your Department"
    }
@@ -160,8 +170,10 @@ If you prefer not to use the plugin system:
 ├── scripts/
 │   └── push_to_feishu.py    # Optional: push report to Feishu Bitable
 ├── skills/
-│   └── daily-report/
-│       └── SKILL.md         # Claude Code skill definition
+│   ├── daily-report/
+│   │   └── SKILL.md         # /daily-report skill
+│   └── weekly-report/
+│       └── SKILL.md         # /weekly-report skill
 ├── config.example.json      # Config template (copy to config.json and fill in)
 ├── CLAUDE.md                # Global worklog rule — append to ~/.claude/CLAUDE.md
 └── README.md

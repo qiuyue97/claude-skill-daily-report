@@ -1,7 +1,7 @@
 {
   "name": "daily-report",
-  "description": "Auto-log daily work to a worklog during conversations, and compose a formatted daily report (日报) at end of day via /daily-report",
-  "version": "1.0.0",
+  "description": "Auto-log daily work to a worklog during conversations, compose a formatted daily report (日报) via /daily-report, and generate weekly reports (周报) via /weekly-report",
+  "version": "1.1.0",
   "author": {
     "name": "qiuyue97",
     "url": "https://github.com/qiuyue97"
@@ -10,8 +10,10 @@
   "license": "MIT",
   "keywords": [
     "daily-report",
+    "weekly-report",
     "worklog",
     "productivity",
-    "日报"
+    "日报",
+    "周报"
   ]
 }

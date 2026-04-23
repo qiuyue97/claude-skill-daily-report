@@ -4,6 +4,7 @@
   "bitable_app_token": "xxxxxxxxxxxxxxxxxxxxxx",
   "table_id": "tblxxxxxxxxxxxxxxxx",
   "daily_report_dir": "/path/to/your/daily-report",
+  "weekly_report_dir": "/path/to/your/weekly-report",
   "name": "Your Name",
   "department": "Your Department"
 }
